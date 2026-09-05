@@ -8,6 +8,7 @@ import categoryRoutes from './routes/categories.js';
 import budgetRoutes from './routes/budgets.js';
 import recurringRoutes from './routes/recurring.js';
 import dashboardRoutes from './routes/dashboard.js';
+import { startRecurringScheduler } from './utils/scheduler.js';
 
 dotenv.config();
 connectDB();
@@ -36,4 +37,6 @@ app.use((err, req, res, next) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
+  const interval = parseInt(process.env.RECURRING_SCHEDULE_MS || '') || 60 * 60 * 1000;
+  startRecurringScheduler(interval);
 });
