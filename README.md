@@ -1,4 +1,4 @@
-# Expense Tracker
+# Expenze.Ly
 
 A full-stack expense tracking application with a Node.js/Express + MongoDB backend and a Next.js + TypeScript frontend.
 

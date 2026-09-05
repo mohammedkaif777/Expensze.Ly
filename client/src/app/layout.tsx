@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Expense Tracker",
+  title: "Expenze.Ly",
   description: "Track your expenses, budgets and recurring payments",
 };
 

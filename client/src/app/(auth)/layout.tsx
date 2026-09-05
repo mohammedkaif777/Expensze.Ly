@@ -11,7 +11,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
             <Wallet className="size-5" />
           </span>
           <span className="text-xl font-semibold tracking-tight">
-            Expense Tracker
+            Expenze.Ly
           </span>
         </Link>
         {children}

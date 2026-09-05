@@ -1,7 +1,7 @@
 {
-  "name": "expense-tracker-server",
+  "name": "expenze-ly-server",
   "version": "1.0.0",
-  "description": "Backend API for the Expense Tracker app",
+  "description": "Backend API for the Expenze.Ly app",
   "main": "src/index.js",
   "type": "module",
   "scripts": {
