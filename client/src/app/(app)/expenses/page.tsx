@@ -2,8 +2,15 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
-import { ChevronLeft, ChevronRight, FilterX, Plus, Search } from "lucide-react";
-import { api, ApiError } from "@/lib/api";
+import {
+  ChevronLeft,
+  ChevronRight,
+  Download,
+  FilterX,
+  Plus,
+  Search,
+} from "lucide-react";
+import { api, ApiError, tokenStore } from "@/lib/api";
 import { useAuth } from "@/lib/auth";
 import type { Category, Expense, ExpenseResponse } from "@/lib/types";
 import { categoryColor } from "@/lib/constants";
@@ -61,6 +68,7 @@ export default function ExpensesPage() {
   const [loading, setLoading] = useState(true);
   const [refreshKey, setRefreshKey] = useState(0);
   const [categories, setCategories] = useState<Category[]>([]);
+  const [exporting, setExporting] = useState(false);
 
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Expense | null>(null);
@@ -115,6 +123,43 @@ export default function ExpensesPage() {
     };
   }, [filters, page, refreshKey]);
 
+  const handleExport = async () => {
+    setExporting(true);
+    const params = new URLSearchParams();
+    if (filters.category !== "all") params.set("category", filters.category);
+    if (filters.startDate) params.set("startDate", filters.startDate);
+    if (filters.endDate) params.set("endDate", filters.endDate);
+
+    try {
+      const token = tokenStore.get();
+      const res = await fetch(
+        `/api/dashboard/export?${params.toString()}`,
+        { headers: token ? { Authorization: `Bearer ${token}` } : undefined }
+      );
+      if (!res.ok) {
+        const body = await res.json().catch(() => null);
+        throw new ApiError(
+          body?.message || "Export failed",
+          res.status
+        );
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `expenses_${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast.success("Expenses exported");
+    } catch (err) {
+      toast.error(err instanceof ApiError ? err.message : "Export failed");
+    } finally {
+      setExporting(false);
+    }
+  };
+
   const handleDelete = async () => {
     if (!deleting) return;
     try {
@@ -138,14 +183,20 @@ export default function ExpensesPage() {
         title="Expenses"
         description="Track and manage your spending"
         actions={
-          <Button
-            onClick={() => {
-              setEditing(null);
-              setFormOpen(true);
-            }}
-          >
-            <Plus className="size-4" /> Add expense
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" onClick={handleExport} disabled={exporting}>
+              <Download className="size-4" />{" "}
+              {exporting ? "Exporting..." : "Export CSV"}
+            </Button>
+            <Button
+              onClick={() => {
+                setEditing(null);
+                setFormOpen(true);
+              }}
+            >
+              <Plus className="size-4" /> Add expense
+            </Button>
+          </div>
         }
       />
 
