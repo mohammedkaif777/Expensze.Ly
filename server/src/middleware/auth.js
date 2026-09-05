@@ -1,6 +1,16 @@
 import jwt from 'jsonwebtoken';
 import User from '../models/User.js';
 
+export const JWT_SECRET = process.env.JWT_SECRET
+  ? process.env.JWT_SECRET
+  : null;
+
+if (!JWT_SECRET || JWT_SECRET.length < 32) {
+  console.warn(
+    '[warn] JWT_SECRET is missing or too short (< 32 chars). Set a strong JWT_SECRET in server/.env before production.'
+  );
+}
+
 export const protect = async (req, res, next) => {
   let token;
 
@@ -13,7 +23,7 @@ export const protect = async (req, res, next) => {
   }
 
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, JWT_SECRET);
     req.user = await User.findById(decoded.id).select('-password');
     if (!req.user) {
       return res.status(401).json({ message: 'Not authorized, user not found' });
@@ -25,5 +35,5 @@ export const protect = async (req, res, next) => {
 };
 
 export const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign({ id }, JWT_SECRET, { expiresIn: '30d' });
 };
