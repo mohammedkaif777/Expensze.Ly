@@ -8,6 +8,7 @@ import categoryRoutes from './routes/categories.js';
 import budgetRoutes from './routes/budgets.js';
 import recurringRoutes from './routes/recurring.js';
 import dashboardRoutes from './routes/dashboard.js';
+import ratesRoutes from './routes/rates.js';
 import { startRecurringScheduler } from './utils/scheduler.js';
 
 dotenv.config();
@@ -28,6 +29,7 @@ app.use('/api/categories', categoryRoutes);
 app.use('/api/budgets', budgetRoutes);
 app.use('/api/recurring', recurringRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/rates', ratesRoutes);
 
 app.use((err, req, res, next) => {
   console.error(err.stack);

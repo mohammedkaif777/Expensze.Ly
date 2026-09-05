@@ -4,10 +4,10 @@ import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Play, Plus } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useCurrency } from "@/lib/use-currency";
 import type { Category, RecurringExpense } from "@/lib/types";
 import { categoryColor } from "@/lib/constants";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -25,8 +25,7 @@ import { RecurringFormDialog } from "@/components/recurring-form-dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 
 export default function RecurringPage() {
-  const { user } = useAuth();
-  const currency = user?.defaultCurrency || "USD";
+  const { format: fmt } = useCurrency();
 
   const [items, setItems] = useState<RecurringExpense[]>([]);
   const [loading, setLoading] = useState(true);
@@ -166,7 +165,7 @@ export default function RecurringPage() {
                       {formatDate(item.nextDueDate)}
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {formatCurrency(item.amount, currency)}
+                      {fmt(item.amount)}
                     </TableCell>
                     <TableCell>
                       <Badge

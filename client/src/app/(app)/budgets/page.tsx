@@ -4,10 +4,9 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { api, ApiError } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useCurrency } from "@/lib/use-currency";
 import type { Category } from "@/lib/types";
 import { categoryColor } from "@/lib/constants";
-import { formatCurrency } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -43,8 +42,7 @@ function monthLabel(month: string) {
 }
 
 export default function BudgetsPage() {
-  const { user } = useAuth();
-  const currency = user?.defaultCurrency || "USD";
+  const { format: fmt } = useCurrency();
   const currentMonthStr = useMemo(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
@@ -178,10 +176,10 @@ export default function BudgetsPage() {
                 <div className="mb-3 flex items-end justify-between">
                   <div>
                     <p className="text-2xl font-semibold tracking-tight">
-                      {formatCurrency(budget.spent, currency)}
+                      {fmt(budget.spent)}
                     </p>
                     <p className="text-xs text-muted-foreground">
-                      spent of {formatCurrency(budget.monthlyLimit, currency)}
+                      spent of {fmt(budget.monthlyLimit)}
                     </p>
                   </div>
                   <span className="text-sm font-medium text-muted-foreground">

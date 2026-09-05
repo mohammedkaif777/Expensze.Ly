@@ -13,9 +13,10 @@ interface ChartTooltipProps {
   active?: boolean;
   payload?: TooltipEntry[];
   label?: string | number;
+  format?: (value: number) => string;
 }
 
-export function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
+export function ChartTooltip({ active, payload, label, format }: ChartTooltipProps) {
   if (!active || !payload?.length) return null;
   return (
     <div className="rounded-md border bg-popover px-3 py-2 text-xs shadow-md">
@@ -31,7 +32,9 @@ export function ChartTooltip({ active, payload, label }: ChartTooltipProps) {
           {entry.name}:{" "}
           <span className="font-medium text-foreground">
             {typeof entry.value === "number"
-              ? formatCurrency(entry.value)
+              ? format
+                ? format(entry.value)
+                : formatCurrency(entry.value)
               : entry.value}
           </span>
         </p>

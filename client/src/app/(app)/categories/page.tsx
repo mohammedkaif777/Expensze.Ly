@@ -12,19 +12,16 @@ import {
   YAxis,
 } from "recharts";
 import { api } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useCurrency } from "@/lib/use-currency";
 import type { Category, CategorySpending } from "@/lib/types";
 import { categoryColor } from "@/lib/constants";
-import { currencySymbol, formatCurrency } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChartTooltip } from "@/components/charts";
 
 export default function CategoriesPage() {
-  const { user } = useAuth();
-  const currency = user?.defaultCurrency || "USD";
-  const sym = currencySymbol(currency);
+  const { format: fmt } = useCurrency();
 
   const [categories, setCategories] = useState<Category[]>([]);
   const [spending, setSpending] = useState<CategorySpending[]>([]);
@@ -109,10 +106,10 @@ export default function CategoriesPage() {
                       tickLine={false}
                       axisLine={false}
                       tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-                      tickFormatter={(v) => `${sym}${v}`}
+                      tickFormatter={(v) => (v === 0 ? "" : fmt(v))}
                       width={56}
                     />
-                    <Tooltip content={<ChartTooltip />} cursor={{ fill: "var(--muted)" }} />
+                    <Tooltip content={<ChartTooltip format={fmt} />} cursor={{ fill: "var(--muted)" }} />
                     <Bar dataKey="total" name="Spent" radius={[4, 4, 0, 0]}>
                       {chartData.map((d) => (
                         <Cell key={d.name} fill={d.color} />
@@ -150,10 +147,8 @@ export default function CategoriesPage() {
                       </span>
                     ) : null}
                   </span>
-                  <span className="font-medium">
-                    {row.total > 0
-                      ? formatCurrency(row.total, currency)
-                      : "—"}
+<span className="font-medium">
+                    {row.total > 0 ? fmt(row.total) : "—"}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">

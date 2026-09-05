@@ -11,10 +11,10 @@ import {
   Search,
 } from "lucide-react";
 import { api, ApiError, tokenStore } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useCurrency } from "@/lib/use-currency";
 import type { Category, Expense, ExpenseResponse } from "@/lib/types";
 import { categoryColor } from "@/lib/constants";
-import { formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -59,8 +59,7 @@ const EMPTY_FILTERS: Filters = {
 };
 
 export default function ExpensesPage() {
-  const { user } = useAuth();
-  const currency = user?.defaultCurrency || "USD";
+  const { format: fmt } = useCurrency();
 
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [page, setPage] = useState(1);
@@ -319,7 +318,7 @@ export default function ExpensesPage() {
                       </span>
                     </TableCell>
                     <TableCell className="text-right font-medium">
-                      {formatCurrency(expense.amount, currency)}
+                      {fmt(expense.amount)}
                     </TableCell>
                     <TableCell className="text-right">
                       <Button
