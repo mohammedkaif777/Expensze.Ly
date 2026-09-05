@@ -23,12 +23,13 @@ import {
   Wallet,
 } from "lucide-react";
 import { api } from "@/lib/api";
-import { useAuth } from "@/lib/auth";
+import { useCurrency } from "@/lib/use-currency";
 import type { DashboardData } from "@/lib/types";
-import { currencySymbol, formatCurrency, formatDate } from "@/lib/utils";
+import { formatDate } from "@/lib/utils";
 import { categoryColor } from "@/lib/constants";
 import { PageHeader } from "@/components/page-header";
 import { Button } from "@/components/ui/button";
+import { CurrencyInsights } from "@/components/currency-insights";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -92,11 +93,9 @@ function StatCard({
 }
 
 export default function DashboardPage() {
-  const { user } = useAuth();
+  const { sym, format: fmt, convert, currency } = useCurrency();
   const [data, setData] = useState<DashboardData | null>(null);
   const [error, setError] = useState(false);
-  const currency = user?.defaultCurrency || "USD";
-  const sym = currencySymbol(currency);
 
   useEffect(() => {
     api<DashboardData>("/dashboard")
@@ -134,8 +133,6 @@ export default function DashboardPage() {
     );
   }
 
-  const months = data.monthlySpend.map((m) => m.total);
-
   const monthData = data.monthlySpend.map((m) => {
     const [year, month] = m._id.split("-");
     return {
@@ -143,15 +140,15 @@ export default function DashboardPage() {
         "en-US",
         { month: "short" }
       ),
-      total: m.total,
+      total: convert(m.total),
     };
   });
 
-  const maxTotal = Math.max(...months, 1);
+  const maxTotal = Math.max(...monthData.map((m) => m.total), 1);
 
   const catData = data.byCategory.map((c) => ({
     name: c.category,
-    value: c.total,
+    value: convert(c.total),
     color: categoryColor(c.category),
   }));
 
@@ -167,7 +164,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard
           label="Spent this month"
-          value={formatCurrency(data.metrics.currentTotal, currency)}
+          value={fmt(data.metrics.currentTotal)}
           icon={Wallet}
           sub={
             data.metrics.change !== null
@@ -184,7 +181,7 @@ export default function DashboardPage() {
         />
         <StatCard
           label="Recurring (monthly)"
-          value={formatCurrency(data.recurring.monthlyTotal, currency)}
+          value={fmt(data.recurring.monthlyTotal)}
           icon={Repeat}
           sub={`${data.recurring.items} active`}
         />
@@ -198,6 +195,8 @@ export default function DashboardPage() {
           icon={TrendingUp}
         />
       </div>
+
+      <CurrencyInsights key={currency} currency={currency} />
 
       <div className="grid gap-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
@@ -233,11 +232,11 @@ export default function DashboardPage() {
                     tickLine={false}
                     axisLine={false}
                     tick={{ fill: "var(--muted-foreground)", fontSize: 12 }}
-                    tickFormatter={(v) => `${sym}${v}`}
+                    tickFormatter={(v) => (v === 0 ? "" : `${sym}${v}`)}
                     width={48}
                     domain={[0, maxTotal * 1.2]}
                   />
-                  <Tooltip content={<ChartTooltip />} />
+                  <Tooltip content={<ChartTooltip format={fmt} />} />
                   <Area
                     type="monotone"
                     dataKey="total"
@@ -276,7 +275,7 @@ export default function DashboardPage() {
                           <Cell key={entry.name} fill={entry.color} />
                         ))}
                       </Pie>
-                      <Tooltip content={<ChartTooltip />} />
+                      <Tooltip content={<ChartTooltip format={fmt} />} />
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
@@ -294,7 +293,7 @@ export default function DashboardPage() {
                         {c.name}
                       </span>
                       <span className="font-medium">
-                        {formatCurrency(c.value, currency)}
+                        {fmt(c.value)}
                       </span>
                     </div>
                   ))}
@@ -341,7 +340,7 @@ export default function DashboardPage() {
                         </span>
                       </TableCell>
                       <TableCell className="text-right font-medium">
-                        {formatCurrency(e.amount, currency)}
+                        {fmt(e.amount)}
                       </TableCell>
                     </TableRow>
                   ))}
@@ -368,8 +367,8 @@ export default function DashboardPage() {
                     <div className="mb-1.5 flex items-center justify-between text-sm">
                       <span className="font-medium">{b.category}</span>
                       <span className="text-muted-foreground">
-                        {formatCurrency(b.spent, currency)} /{" "}
-                        {formatCurrency(b.monthlyLimit, currency)}
+                        {fmt(b.spent)} /{" "}
+                        {fmt(b.monthlyLimit)}
                       </span>
                     </div>
                     <div className="flex items-center gap-3">
