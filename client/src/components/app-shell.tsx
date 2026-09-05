@@ -55,7 +55,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             <Wallet className="size-4" />
           </span>
           <span className="text-lg font-semibold tracking-tight">
-            Expense Tracker
+            Expenze.Ly
           </span>
         </Link>
 
@@ -117,7 +117,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <Wallet className="size-4" />
               </span>
               <span className="font-semibold tracking-tight">
-                Expense Tracker
+                Expenze.Ly
               </span>
             </Link>
           </div>

@@ -67,7 +67,7 @@ export default function LandingPage() {
               <Wallet className="size-4" />
             </span>
             <span className="text-lg font-semibold tracking-tight">
-              Expense Tracker
+              Expenze.Ly
             </span>
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-medium text-muted-foreground md:flex">
@@ -143,7 +143,7 @@ export default function LandingPage() {
                 <span className="size-3 rounded-full bg-yellow-500/70" />
                 <span className="size-3 rounded-full bg-green-500/70" />
                 <span className="ml-3 text-xs text-muted-foreground">
-                  app.expensetraker.vercel.app/dashboard
+                  app.expenze.ly/dashboard
                 </span>
               </div>
               <div className="grid gap-4 p-4 sm:grid-cols-3 sm:p-6">
@@ -362,10 +362,10 @@ export default function LandingPage() {
             <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <Wallet className="size-3.5" />
             </span>
-            <span className="text-sm font-semibold">Expense Tracker</span>
+            <span className="text-sm font-semibold">Expenze.Ly</span>
           </div>
           <p className="text-sm text-muted-foreground">
-            © {new Date().getFullYear()} Expense Tracker. Built for clarity,
+            © {new Date().getFullYear()} Expenze.Ly. Built for clarity,
             not complexity.
           </p>
         </div>

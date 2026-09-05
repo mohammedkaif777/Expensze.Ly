@@ -19,7 +19,7 @@ app.use(cors({ origin: process.env.FRONTEND_URL || '*' }));
 app.use(express.json());
 
 app.get('/', (req, res) => {
-  res.json({ message: 'Expense Tracker API is running' });
+  res.json({ message: 'Expenze.Ly API is running' });
 });
 
 app.use('/api/auth', authRoutes);
