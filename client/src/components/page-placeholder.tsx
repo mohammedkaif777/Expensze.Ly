@@ -1,13 +1,19 @@
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent } from "@/components/ui/card";
 
-export default function DashboardPage() {
+export function PagePlaceholder({
+  title,
+  description,
+}: {
+  title: string;
+  description: string;
+}) {
   return (
     <div>
-      <PageHeader title="Dashboard" />
+      <PageHeader title={title} />
       <Card>
         <CardContent className="py-12 text-center text-sm text-muted-foreground">
-          The dashboard is under construction.
+          {description}
         </CardContent>
       </Card>
     </div>
