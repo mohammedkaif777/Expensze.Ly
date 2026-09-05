@@ -29,7 +29,6 @@ router.get(
       monthlySpend,
       budgets,
       recurring,
-      activeRecurringTotal,
     ] = await Promise.all([
       Expense.aggregate([
         { $match: { user: req.user._id, date: { $gte: start, $lt: end } } },
@@ -115,7 +114,7 @@ router.get(
       budgetSummary: budgetStatus,
       recurring: {
         items: recurring.length,
-        monthlyTotal: Math.round(activeRecurringTotal.reduce((sum, r) => {
+        monthlyTotal: Math.round(recurring.reduce((sum, r) => {
           const mult = r.frequency === 'daily' ? 30 : r.frequency === 'weekly' ? 4.33 : r.frequency === 'monthly' ? 1 : 1 / 12;
           return sum + r.amount * mult;
         }, 0) * 100) / 100,
