@@ -16,7 +16,8 @@
 | Backend | `cd server && npm run dev` | http://localhost:5000 | nodemon; auto-reloads |
 | Frontend | `cd client && npm run dev` | http://localhost:3000 | Next.js dev server |
 
-**Demo account:** `demo@example.com` / `demo1234` (currency USD)
+**Demo account:** `demo@example.com` / `demo1234` (currency INR — set to
+non-USD so the Currency & Market card is visible)
 Current demo data: 15 expenses, 2 budgets, 1 recurring (Netflix) — seeded into
 `expense_tracker` DB on `mongodb://127.0.0.1:27017`.
 
@@ -66,9 +67,9 @@ Current demo data: 15 expenses, 2 budgets, 1 recurring (Netflix) — seeded into
 | 16 | Theme toggle – 3 modes (Light/Dark/System) w/ icons | ✅ Done | feature/rebrand |
 | 17 | Currency backend: live rates + conversion + insight | ✅ Done | feature/currency |
 | 18 | Currency display in preferred currency (Expenses/Budgets/Recurring/Categories) | ✅ Done | feature/currency |
-| 19 | Currency display on Dashboard | 🔄 In progress | feature/currency |
-| 20 | Currency & Market card on dashboard (rate vs USD, trend, expense-avoid + investment advice) | 🔄 In progress | feature/currency |
-| 21 | Merge feature/currency → develop → main + release + verify | ⏳ Pending | feature/currency |
+| 19 | Currency display on Dashboard | ✅ Done | feature/currency |
+| 20 | Currency & Market card on dashboard (rate vs USD, trend, expense-avoid + investment advice) | ✅ Done | feature/currency |
+| 21 | Merge feature/currency → develop → main + release + verify | ✅ Done | feature/currency |
 | 22 | Deploy backend/frontend to cloud (production) | ⏳ Pending (not requested yet) | — |
 
 ---
@@ -113,7 +114,7 @@ Current demo data: 15 expenses, 2 budgets, 1 recurring (Netflix) — seeded into
   README, server package.json.
 - Theme toggle now shows **Light / Dark / System** each with icon + checkmark.
 
-### 4.7 Preferred currency + market advice (in progress, `feature/currency`)
+### 4.7 Preferred currency + market advice (done, `feature/currency`)
 
 **Backend (done):**
 - `server/src/utils/rates.js` — fetches live rates from **Frankfurter (ECB)**
@@ -134,12 +135,17 @@ Current demo data: 15 expenses, 2 budgets, 1 recurring (Netflix) — seeded into
 - `server/test/rates.test.js` — 9 new tests (total 13 passing). Live-verified:
   `1 USD = 94.49 INR` (real ECB data).
 
-**Frontend (mostly done):**
+**Frontend (done):**
 - `client/src/lib/use-currency.ts` — catches preferred-currency + rate,
   `convert(usd)` and `format(usd)` helpers, 6-h cache, graceful 1:1 fallback.
-- Converted display on pages: Expenses ✅, Budgets ✅, Recurring ✅,
-  Categories ✅ (list + chart axis).
-- Dashboard + "Currency & Market" card: **still in progress**.
+- Converted display on pages: Expenses, Budgets, Recurring, Categories,
+  Dashboard (stat cards, spending-trend/by-category charts, recent expenses,
+  budgets, axes + tooltips).
+- `client/src/components/currency-insights.tsx` — "Currency & Market" card on
+  the dashboard (non-USD users only): `1 USD = ₹x`, strength badge
+  (weak/strong/stable), 30-day sparkline + trend %, expense-avoid advice and
+  investment tips. Offline/fallback state handled.
+- Released to `main` (2026-09-05), demo account set to INR for verification.
 
 **⚠️ Data model assumption (important):** stored expense amounts are treated as
 **USD base**; the app *converts for display* to the user's preferred currency.
@@ -165,17 +171,8 @@ currency per expense), that's extra work — decide before release.
 
 ## 6. Resume here (next actions)
 
-1. Finish **Dashboard currency conversion** (`client/src/app/(app)/dashboard/page.tsx`)
-   — stat cards, Spending trend + By category charts, Recent expenses, Budgets,
-   using `useCurrency().format/convert`.
-2. Build **Currency & Market card** component (e.g.
-   `client/src/components/currency-insights.tsx`) on the dashboard:
-   - show `1 USD = ₹x` and trend badge (weak/strong/stable) using
-     `GET /api/rates/insight?to=<currency>`
-   - mini sparkline from `historical` series
-   - render `insight.advice` ("expenses to avoid") and `insight.investments`
-   - only render when preferred currency ≠ USD; handle offline/fallback
-3. `npm run lint`, `npx tsc --noEmit`, `npm run build` (client), `npm test` (server).
-4. Commit/push `feature/currency` → merge to `develop` → release to `main`,
-   restart both dev servers, verify end-to-end (login → dashboard, INR user
-   sees converted amounts + market card).
+1. Deploy to cloud (when requested): backend + frontend to production,
+   MongoDB Atlas (or managed), proper `JWT_SECRET`/envs, and scheduler as a
+   standalone worker/cron (currently in-process).
+2. Optional future work: true multi-currency entry (store currency per
+   expense instead of treating everything as USD base).
